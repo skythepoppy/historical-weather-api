@@ -4,14 +4,17 @@ import pandas as pd
 
 app = Flask(__name__)  # website object
 
+# stations data frame
+stations = pd.read_csv("data_small/stations.txt", skiprows=17)
+stations = stations[["STAID","STANAME                                 "]]
 
 @app.route("/")
 def home():
-    return render_template('home.html')
+    return render_template('home.html', data=stations.to_html())
 
 
 @app.route("/api/v1/<station>/<date>")   # contains the link to about // route to about
-def about(station, date):
+def content(station, date):
     filename = "data_small/TG_STAID" + str(station).zfill(6)+".txt"
     df = pd.read_csv(filename, skiprows=20, parse_dates=["    DATE"])
     temperature = df.loc[df['    DATE']==date]['   TG'].squeeze()/10
